@@ -21,32 +21,41 @@ class _PriceScreenState extends State<PriceScreen> {
     return dropDownItem;
   }
 
-  var price;
+  var btcrate;
+  var ethrate;
+  var ltcrate;
   var data;
   var bitcoinprice;
+  var ethPrice;
+  var ltcPrice;
   Bitcoin bt = Bitcoin();
 
   @override
   void initState() {
     super.initState();
     getStart();
-    updateUI(bitcoinprice);
+    updateUI(bitcoinprice, ethPrice, ltcPrice);
   }
 
-  void updateUI(dynamic bitcoinprice) {
-    print(bitcoinprice);
+  void updateUI(dynamic bitcoinprice, dynamic ethPrice, dynamic ltcPrice) {
     setState(() {
-      if (bitcoinprice != null) {
-        double tempPrice = double.parse(bitcoinprice['last'].toString());
-        price = tempPrice.toInt();
+      if (bitcoinprice != null || ethPrice != null || ltcPrice != null) {
+        double tempbtcPrice = double.parse(bitcoinprice['last'].toString());
+        double tempethPrice = double.parse(ethPrice['last'].toString());
+        double templtcPrice = double.parse(ltcPrice['last'].toString());
+        btcrate = tempbtcPrice.toInt();
+        ethrate = tempethPrice.toInt();
+        ltcrate = templtcPrice.toInt();
       }
     });
   }
 
   void getStart() async {
     bitcoinprice = await bt.bitcoinPrice(selectCurrency);
+    ethPrice = await bt.etheriumPrice(selectCurrency);
+    ltcPrice = await bt.literiumPrice(selectCurrency);
     setState(() {
-      updateUI(bitcoinprice);
+      updateUI(bitcoinprice, ethPrice, ltcPrice);
     });
   }
 
@@ -71,11 +80,53 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = $price $selectCurrency',
+                  '1 BTC = $btcrate $selectCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
                     color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.yellowAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 ETH = $ethrate $selectCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.lightGreenAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 LTC = $ltcrate $selectCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.red,
                   ),
                 ),
               ),
@@ -92,8 +143,11 @@ class _PriceScreenState extends State<PriceScreen> {
                 onChanged: (value) async {
                   selectCurrency = value;
                   bitcoinprice = await bt.bitcoinPrice(selectCurrency);
+                  ethPrice = await bt.etheriumPrice(selectCurrency);
+                  ltcPrice = await bt.literiumPrice(selectCurrency);
+
                   setState(() {
-                    updateUI(bitcoinprice);
+                    updateUI(bitcoinprice, ethPrice, ltcPrice);
                     print(value);
                   });
                 }),
